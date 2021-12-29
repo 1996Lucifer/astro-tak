@@ -6,9 +6,9 @@ class CustomScaffold extends StatelessWidget {
   final BottomNavigationBar bottomNavigationBar;
   
   const CustomScaffold({
-    Key? key,
-    required this.child,
-    required this.bottomNavigationBar,
+    Key key,
+    @required this.child,
+    @required this.bottomNavigationBar,
   }) : super(key: key);
 
   @override

@@ -4,7 +4,7 @@ import './../utils/images.dart';
 
 class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
   const CustomAppBar({
-    Key? key,
+    Key key,
   }) : super(key: key);
 
   @override

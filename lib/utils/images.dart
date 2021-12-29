@@ -12,4 +12,6 @@ class Images {
   static const String language = 'assets/language.png';
   static const String expert = 'assets/expert.png';
   static const String charges = 'assets/charge.png';
+  static const String rise = 'assets/rise.png';
+  static const String set = 'assets/set.png';
 }
