@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return GestureDetector(
       onTap: () => Utils.hideKeyboard(),
       child: MaterialApp(
-        title: 'Launch Screen',
+        title: 'Astro Tak',
         theme: ThemeData(
           primarySwatch: Colors.blue,
           scaffoldBackgroundColor: Colors.white,

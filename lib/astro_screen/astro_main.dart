@@ -1,6 +1,7 @@
 import 'package:astro_talks/astro_screen/astro_bloc/bloc.dart';
 import 'package:astro_talks/astro_screen/astro_bloc/state.dart';
 import 'package:astro_talks/astro_screen/data/astro_model.dart';
+import 'package:astro_talks/shared_widget/error_page.dart';
 import 'package:astro_talks/utils/colors.dart';
 import 'package:astro_talks/utils/images.dart' as image;
 import 'package:astro_talks/utils/utils.dart';
@@ -17,7 +18,7 @@ enum SortBy {
   PRICE_LOW_TO_HIGH
 }
 
-enum Filters { SKILLS, LANGUAGE_SPOKEN }
+enum Filters { VASTU, PALMISTRY, HINDI, ENGLISH }
 
 class AstroScreen extends StatefulWidget {
   AstroScreen({Key key}) : super(key: key);
@@ -34,6 +35,12 @@ class _AstroScreenState extends State<AstroScreen>
   Filters _filters;
   AstroBloc _astroBloc;
   List<AstrologersList> _searchResult = [];
+  Map<Filters, bool> _checked = {
+    Filters.ENGLISH: false,
+    Filters.HINDI: false,
+    Filters.PALMISTRY: false,
+    Filters.VASTU: false
+  };
 
   @override
   void initState() {
@@ -94,33 +101,28 @@ class _AstroScreenState extends State<AstroScreen>
         ),
       );
 
-  _menuItem(
-          {String title,
-          groupValue,
-          value,
-          String type,
-          List<AstrologersList> list}) =>
-      StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) => Container(
-          width: 250.0,
-          child: RadioListTile(
-            contentPadding: EdgeInsets.symmetric(horizontal: 0),
-            title: Text(
-              title,
-              style: TextStyle(fontSize: 15),
-            ),
-            groupValue: groupValue,
-            value: value,
-            onChanged: (dynamic val) => setState(() {
-              if (type == 'sort-by') {
-                _sortBy = val;
-                _sortByList(list);
-                Navigator.pop(context);
-              } else {
-                _filters = val;
-              }
-            }),
+  _menuItem({
+    String title,
+    groupValue,
+    value,
+    String type,
+    List<AstrologersList> list,
+  }) =>
+      Container(
+        width: 250.0,
+        child: RadioListTile(
+          contentPadding: EdgeInsets.symmetric(horizontal: 0),
+          title: Text(
+            title,
+            style: TextStyle(fontSize: 15),
           ),
+          groupValue: groupValue,
+          value: value,
+          onChanged: (dynamic val) => setState(() {
+            _sortBy = val;
+            _sortByList(list);
+            Navigator.pop(context);
+          }),
         ),
       );
 
@@ -244,8 +246,8 @@ class _AstroScreenState extends State<AstroScreen>
     });
   }
 
-  _showFiltersPopupMenu() {
-    showMenu<String>(
+  _showFiltersPopupMenu(List<AstrologersList> list) {
+    showMenu(
       context: context,
       position: RelativeRect.fromLTRB(
         25.0,
@@ -254,66 +256,154 @@ class _AstroScreenState extends State<AstroScreen>
         0.0,
       ),
       items: [
-        PopupMenuItem<String>(
+        PopupMenuItem(
           child: Text(
             'Filters',
             style: TextStyle(
               color: ColorShades.primaryColor,
             ),
           ),
-          value: '-1',
+          // value: '-1',
           enabled: false,
           padding: const EdgeInsets.only(left: 20.0),
         ),
-        PopupMenuItem<String>(
+        PopupMenuItem(
           child: const PopupMenuDivider(),
-          value: '-2',
+          // value: '-1',
           enabled: false,
           padding: EdgeInsets.symmetric(vertical: 0, horizontal: 20),
         ),
-        PopupMenuItem<String>(
-          child: _menuItem(
-            title: 'Skills',
-            value: Filters.SKILLS,
-            groupValue: _filters,
-            type: 'filters',
+        PopupMenuItem(
+          child: Text(
+            'Skills',
+            style: TextStyle(
+              color: ColorShades.primaryColor,
+            ),
           ),
-          value: '1',
+          // value: '-1',
+          enabled: false,
+          padding: const EdgeInsets.only(left: 20.0),
         ),
-        PopupMenuItem<String>(
-          child: _menuItem(
-            title: 'Language',
-            value: Filters.LANGUAGE_SPOKEN,
-            groupValue: _filters,
-            type: 'filters',
+        CheckedPopupMenuItem(
+          checked: _checked[Filters.PALMISTRY],
+          value: Filters.PALMISTRY,
+          child: Text('Palmistry'),
+        ),
+        CheckedPopupMenuItem(
+          checked: _checked[Filters.VASTU],
+          value: Filters.VASTU,
+          child: Text('Vastu'),
+        ),
+        PopupMenuItem(
+          child: Text(
+            'Languages',
+            style: TextStyle(
+              color: ColorShades.primaryColor,
+            ),
           ),
-          value: '2',
+          enabled: false,
+          padding: const EdgeInsets.only(left: 20.0),
+        ),
+        CheckedPopupMenuItem(
+          checked: _checked[Filters.ENGLISH],
+          value: Filters.ENGLISH,
+          child: Text('English'),
+        ),
+        CheckedPopupMenuItem(
+          checked: _checked[Filters.HINDI],
+          value: Filters.HINDI,
+          child: Text('Hindi'),
         ),
       ],
       elevation: 8.0,
-    ).then<void>((String itemSelected) {
-      if (itemSelected == null) return;
-
-      if (itemSelected == "1") {
-        setState(() {
-          _filters = Filters.SKILLS;
-        });
-      } else if (itemSelected == "2") {
-        setState(() {
-          _filters = Filters.LANGUAGE_SPOKEN;
-        });
+    ).then((itemSelected) {
+      switch (itemSelected) {
+        case Filters.PALMISTRY:
+          setState(() {
+            _filters = Filters.PALMISTRY;
+            _checked[_filters] = !_checked[_filters];
+          });
+          break;
+        case Filters.VASTU:
+          setState(() {
+            _filters = Filters.VASTU;
+            _checked[_filters] = !_checked[_filters];
+          });
+          break;
+        case Filters.ENGLISH:
+          setState(() {
+            _filters = Filters.ENGLISH;
+            _checked[_filters] = !_checked[_filters];
+          });
+          break;
+        case Filters.HINDI:
+          setState(() {
+            _filters = Filters.HINDI;
+            _checked[_filters] = !_checked[_filters];
+          });
+          break;
+        default:
+          break;
       }
+
+      _filterList(list);
     });
   }
 
-  getListOfString(List skills) {
+  _filterList(List<AstrologersList> list) {
+    _searchResult.clear();
+    List<String> _temp = [];
+    List<String> getTempList(AstrologersList element) {
+      return [
+        ...getListOfString(element.skills),
+        ...getListOfString(element.languages),
+      ];
+    }
+
+    if (_checked[Filters.VASTU]) {
+      _temp.add('Vastu');
+    } else {
+      _temp.remove('Vastu');
+    }
+
+    if (_checked[Filters.PALMISTRY]) {
+      _temp.add('Palmistry');
+    } else {
+      _temp.remove('Palmistry');
+    }
+
+    if (_checked[Filters.HINDI]) {
+      _temp.add('Hindi');
+    } else {
+      _temp.remove('Hindi');
+    }
+
+    if (_checked[Filters.ENGLISH]) {
+      _temp.add('English');
+    } else {
+      _temp.remove('English');
+    }
+
+    list.forEach((astrologersData) {
+      // print(getTempList(astrologersData));
+      print(getTempList(astrologersData).toSet().containsAll(_temp.toSet()));
+      if (getTempList(astrologersData).toSet().containsAll(_temp.toSet())) {
+        _searchResult.add(astrologersData);
+      }
+    });
+
+    print(_searchResult.length);
+
+    setState(() {});
+  }
+
+  getListOfString(List data) {
     List<String> _list = [];
-    skills.forEach((e) => _list.add(e.name.toString()));
+    data.forEach((e) => _list.add(e.name.toString()));
     return _list;
   }
 
   getListOfAstrologers(List<AstrologersList> astrologersList) {
-    print(_searchResult);
     bool isEmpty =
         _searchBarController.text.isNotEmpty && _searchResult.length == 0;
     if (_searchResult.length != 0) astrologersList = _searchResult;
@@ -351,7 +441,7 @@ class _AstroScreenState extends State<AstroScreen>
                               ' years',
                           style: TextStyle(
                             fontSize: 13.0,
-                            color: ColorShades.grey400,
+                            color: ColorShades.grey,
                           ),
                         ),
                       ],
@@ -446,13 +536,18 @@ class _AstroScreenState extends State<AstroScreen>
                           ),
                           SizedBox(width: 20.0),
                           Utils.assetImage(
-                              url: image.Images.filter,
-                              onTap: () => _showFiltersPopupMenu()),
+                            url: image.Images.filter,
+                            onTap: () => _showFiltersPopupMenu(
+                              currentState.astrologersList,
+                            ),
+                          ),
                           SizedBox(width: 20.0),
                           Utils.assetImage(
-                              url: image.Images.sort,
-                              onTap: () => _showSortByPopupMenu(
-                                  currentState.astrologersList)),
+                            url: image.Images.sort,
+                            onTap: () => _showSortByPopupMenu(
+                              currentState.astrologersList,
+                            ),
+                          ),
                           SizedBox(width: 15.0),
                         ],
                       ),
@@ -470,11 +565,9 @@ class _AstroScreenState extends State<AstroScreen>
             ),
           );
         } else if (currentState is AstroErrorState) {
-          return Text('Error');
+          return ErrorView();
         }
-        return Center(
-          child: CircularProgressIndicator(),
-        );
+        return Utils.circularProgressIndicator();
       },
     );
   }

@@ -1,7 +1,11 @@
 import 'package:astro_talks/astro_screen/astro_bloc/bloc.dart';
 import 'package:astro_talks/astro_screen/astro_bloc/state.dart';
 import 'package:astro_talks/astro_screen/astro_main.dart';
-import 'package:astro_talks/daily_panchang/panchang.dart';
+import 'package:astro_talks/daily_panchang/location_bloc/bloc.dart';
+import 'package:astro_talks/daily_panchang/location_bloc/state.dart';
+import 'package:astro_talks/daily_panchang/panchang_bloc/bloc.dart';
+import 'package:astro_talks/daily_panchang/panchang_bloc/state.dart';
+import 'package:astro_talks/daily_panchang/panchang_main.dart';
 import 'package:astro_talks/shared_widget/appbar.dart';
 import 'package:astro_talks/shared_widget/custom_scaffold.dart';
 import 'package:astro_talks/utils/colors.dart';
@@ -23,12 +27,19 @@ class _HomeScreenState extends State<HomeScreen> {
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   PageController _pageController;
   AstroBloc _astroBloc;
+  PanchangBloc _panchangBloc;
+  LocationBloc _locationBloc;
 
   @override
   void initState() {
     super.initState();
-    _pageController = new PageController();
+    _pageController = PageController(
+      initialPage: 0,
+      keepPage: true,
+    );
     _astroBloc = AstroBloc(AstroInitialState());
+    _panchangBloc = PanchangBloc(PanchangInitialState());
+    _locationBloc = LocationBloc(LocationInitialState());
   }
 
   @override
@@ -44,11 +55,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onItemTapped(int index) {
-    _pageController.animateToPage(
-      _selectedIndex,
-      duration: Duration(milliseconds: 300),
-      curve: Curves.easeIn,
-    );
+    setState(() {
+      _selectedIndex = index;
+      _pageController.animateToPage(
+        _selectedIndex,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeIn,
+      );
+    });
   }
 
   @override
@@ -56,18 +70,29 @@ class _HomeScreenState extends State<HomeScreen> {
     return CustomScaffold(
       child: PageView(
         children: <Widget>[
+          MultiBlocProvider(providers: [
+            BlocProvider<PanchangBloc>(
+              create: (context) => _panchangBloc,
+            ),
+            BlocProvider<LocationBloc>(
+              create: (context) => _locationBloc,
+            ),
+          ], child: DailyPanchang()),
           BlocProvider<AstroBloc>(
             create: (context) => _astroBloc,
             child: AstroScreen(),
           ),
-          DailyPanchang(),
-          Text(
-            'Ask Questions',
-            style: optionStyle,
+          Center(
+            child: Text(
+              'Ask Questions',
+              style: optionStyle,
+            ),
           ),
-          Text(
-            'Reports',
-            style: optionStyle,
+          Center(
+            child: Text(
+              'Reports',
+              style: optionStyle,
+            ),
           ),
         ],
         controller: _pageController,
@@ -78,7 +103,7 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(
               icon: Icon(Icons.home_outlined, color: Colors.grey[400]),
               label: 'Home',
-              activeIcon: Utils.assetImage(url: Images.home)),
+              activeIcon: Icon(Icons.home, color: ColorShades.primaryColor)),
           BottomNavigationBarItem(
               icon: Utils.assetImage(url: Images.talkToAstrologer),
               label: 'Talk To Astrologer',

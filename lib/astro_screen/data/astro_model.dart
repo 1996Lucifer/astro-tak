@@ -208,8 +208,8 @@ class Images {
 }
 
 class Small {
-  Null imageUrl;
-  Null id;
+  String imageUrl;
+  int id;
 
   Small({this.imageUrl, this.id});
 

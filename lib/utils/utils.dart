@@ -1,6 +1,7 @@
 import 'package:astro_talks/utils/colors.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class Utils {
   static Widget assetImage({
@@ -21,21 +22,19 @@ class Utils {
 
   static Widget networkImage({
     @required String url,
-    double height = 200,
+    double height = 100,
     double width = 100,
     Function() onTap,
   }) {
     return GestureDetector(
       onTap: onTap,
       child: CachedNetworkImage(
-        fit: BoxFit.cover,
         imageUrl: url,
-        height: height,
+        fit: BoxFit.cover,
         width: width,
-        progressIndicatorBuilder: (context, url, progress) => Center(
-            child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(ColorShades.primaryColor),
-        )),
+        height: 100,
+        progressIndicatorBuilder: (context, url, progress) =>
+            circularProgressIndicator(),
       ),
     );
   }
@@ -53,6 +52,11 @@ class Utils {
     );
   }
 
+  static Widget getTextWithGreyColor(text) => Text(
+        text.toString(),
+        style: TextStyle(color: ColorShades.grey),
+      );
+
   static Widget textWithImage({
     @required String source,
     @required String text,
@@ -68,7 +72,7 @@ class Utils {
           child: Text(
             text,
             style: TextStyle(
-              color: isBold ? ColorShades.black : ColorShades.grey400,
+              color: isBold ? ColorShades.black : ColorShades.grey,
               fontSize: 13.0,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
             ),
@@ -83,4 +87,23 @@ class Utils {
   }
 
   static String commaSeparatedString(List data) => data.join(', ');
+
+  static String getOrdinalDate(DateTime date) {
+    var suffix = "th";
+    var digit = date.day % 10;
+    if ((digit > 0 && digit < 4) && (date.day < 11 || date.day > 13)) {
+      suffix = ["st", "nd", "rd"][digit - 1];
+    }
+    return DateFormat("d'$suffix' MMMM, yyyy").format(date);
+  }
+
+  static String getTime(int epoch) {
+    var date = DateTime.fromMillisecondsSinceEpoch(epoch);
+    return '${date.hour.toString()} hr ${date.minute.toString()} min ${date.second.toString()} sec';
+  }
+
+  static Widget circularProgressIndicator() => Center(
+          child: CircularProgressIndicator(
+        valueColor: AlwaysStoppedAnimation<Color>(ColorShades.primaryColor),
+      ));
 }
