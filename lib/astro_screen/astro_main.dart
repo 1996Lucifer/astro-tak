@@ -385,15 +385,10 @@ class _AstroScreenState extends State<AstroScreen>
     }
 
     list.forEach((astrologersData) {
-      // print(getTempList(astrologersData));
-      print(getTempList(astrologersData).toSet().containsAll(_temp.toSet()));
       if (getTempList(astrologersData).toSet().containsAll(_temp.toSet())) {
         _searchResult.add(astrologersData);
       }
     });
-
-    print(_searchResult.length);
-
     setState(() {});
   }
 
