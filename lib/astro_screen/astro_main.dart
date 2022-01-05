@@ -427,10 +427,12 @@ class _AstroScreenState extends State<AstroScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Utils.boldText(
-                            text: astrologersList[index].firstName +
-                                ' ' +
-                                astrologersList[index].lastName),
+                        Expanded(
+                          child: Utils.boldText(
+                              text: astrologersList[index].firstName +
+                                  ' ' +
+                                  astrologersList[index].lastName),
+                        ),
                         Text(
                           astrologersList[index].experience.round().toString() +
                               ' years',
